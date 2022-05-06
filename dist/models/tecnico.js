@@ -39,7 +39,7 @@ Tecnicos.init({
         getUsuario: function (limit, where) {
             return {
                 attributes: {
-                    exclude: ['UsuarioId', 'is_admin']
+                    exclude: ['UsuarioId']
                 },
                 limit,
                 where,
@@ -47,7 +47,7 @@ Tecnicos.init({
                     model: usuario_1.default,
                     required: true,
                     attributes: {
-                        exclude: ['estado', 'createdAt', 'updatedAt']
+                        exclude: ['createdAt', 'updatedAt']
                     },
                     where: {
                         estado: true

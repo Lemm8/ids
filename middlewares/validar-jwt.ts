@@ -28,7 +28,6 @@ export const validarJWT = async ( req: Request, res: Response, next: NextFunctio
 
         // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
         const { id } = jwt.verify( token, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3') as JwtPayload;
-        console.log( id );
 
         // LEER USUARIO CORRESPONDIENTE
         const usuario = await Usuario.findOne({
@@ -116,6 +115,7 @@ export const isAdmin = async ( req: Request, res: Response, next: NextFunction )
     try {
         
         const admin = await Tecnico.scope("getUsuario").findOne({ where: { UsuarioId: req.usuario.id } });
+        console.log( admin?.is_admin );
         if ( !admin || !admin.Usuario.estado || !admin.is_admin ) {
             return res.status( 403 ).json({
                 status: 403,
@@ -137,8 +137,8 @@ export const isAdmin = async ( req: Request, res: Response, next: NextFunction )
 
 
 export const isTecnicoOrAdmin = async ( req: Request, res: Response, next: NextFunction ) => {
-    try {
-
+    try {  
+        
         const tecnico = await Tecnico.scope("getUsuario").findOne({ where: { UsuarioId: req.usuario.id } });
         if ( !tecnico || !tecnico.Usuario.estado ) {
             return res.status( 403 ).json({

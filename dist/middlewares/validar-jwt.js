@@ -29,7 +29,6 @@ const validarJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         }
         // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
         const { id } = jsonwebtoken_1.default.verify(token, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3');
-        console.log(id);
         // LEER USUARIO CORRESPONDIENTE
         const usuario = yield usuario_1.default.findOne({
             where: {
@@ -106,6 +105,7 @@ exports.isTecnico = isTecnico;
 const isAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const admin = yield tecnico_1.default.scope("getUsuario").findOne({ where: { UsuarioId: req.usuario.id } });
+        console.log(admin === null || admin === void 0 ? void 0 : admin.is_admin);
         if (!admin || !admin.Usuario.estado || !admin.is_admin) {
             return res.status(403).json({
                 status: 403,

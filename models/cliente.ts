@@ -45,7 +45,7 @@ Clientes.init({
                     model: Usuario,                    
                     required: true,
                     attributes: {
-                        exclude: [ 'estado', 'createdAt', 'updatedAt' ]
+                        exclude: [ 'createdAt', 'updatedAt' ]
                     },
                     where: {
                         estado: true
