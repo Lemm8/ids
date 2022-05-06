@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize';
 
+// mysql://bdb6070fdf5ba3:8d6bf003@us-cdbr-east-05.cleardb.net/heroku_81a3e3fb8cdee54?reconnect=true
+
 let db: Sequelize;
 
 if ( process.env.JAWSDB_URL ) {
