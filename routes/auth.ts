@@ -12,7 +12,7 @@ const router = Router();
 // LOGIN
 router.post( '/login', [
     check( 'correo' ).exists().isEmail(),
-    check( 'contrasena' ).exists().custom( validarContrasena ),
+    check( 'contrasena' ).exists(),
     validarCampos
 ], login );
 

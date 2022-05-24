@@ -33,7 +33,7 @@ class Server {
             auth: '/api/auth'
         };
         this.app = (0, express_1.default)();
-        this.port = process.env.PORT || '8000';
+        this.port = process.env.PORT || '3301';
         // CONECTAR CON LA BASE DE DATOS
         this.dbConnection();
         // DEFINIR MIDDLEWARES
