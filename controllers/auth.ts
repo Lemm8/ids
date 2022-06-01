@@ -13,7 +13,7 @@ export const login = async ( req: Request, res: Response ) => {
     // DATOS DE ENTRADA DEL LOGIN
     const { correo, contrasena } = req.body;
 
-    try {
+    try {        
 
         // ENCONTRAR USUARIO CON BASE A CORREO
         const usuario = await Usuario.findOne({ where: { correo } });
@@ -35,6 +35,16 @@ export const login = async ( req: Request, res: Response ) => {
             });
         }
 
+        let rol = ''
+
+        if ( await Cliente.findOne({ where: { UsuarioId: usuario.id } }) ) {
+            rol = 'cliente'
+        } else if ( await Tecnico.findOne({ where: { UsuarioId: usuario.id, is_admin: false } }) ) {
+            rol = 'tecnico'
+        } else if ( await Tecnico.findOne({ where: { UsuarioId: usuario.id, is_admin: true } }) ) {
+            rol = 'admin'
+        }
+
         // GENERAR TOKEN
         const token = await generarJWT( usuario.id );
 
@@ -42,6 +52,7 @@ export const login = async ( req: Request, res: Response ) => {
         return res.status( 200 ).json({
             status: 200,
             usuario,
+            rol,
             token
         })
 

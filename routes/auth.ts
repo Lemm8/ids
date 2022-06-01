@@ -2,7 +2,6 @@ import { Router } from "express";
 import { check } from "express-validator";
 
 import { validarCampos } from "../middlewares/validar-campos";
-import { validarContrasena } from "../middlewares/db-validators";
 
 import { login } from "../controllers/auth";
 

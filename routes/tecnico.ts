@@ -6,7 +6,7 @@ import { check } from "express-validator";
 import { validarCampos } from "../middlewares/validar-campos";
 import { validarContrasena, existeCorreo, existeTecnico, existeTelefono, existeCURP } from '../middlewares/db-validators';
 
-import { validarJWT, isTecnicoOrAdmin } from '../middlewares/validar-jwt';
+import { validarJWT, isTecnicoOrAdmin, isAdmin } from '../middlewares/validar-jwt';
 
 
 const router = Router();
@@ -19,6 +19,8 @@ router.get( '/:id', [
 ], getTecnico );
 
 router.post( '/', [
+    validarJWT,
+    isAdmin,
     check( 'correo' ).isEmail(),
     check( 'correo' ).custom( existeCorreo ),
     check( 'nombre', 'El nombre es obligatorio' ).exists(),
