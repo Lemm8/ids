@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const usuario_1 = __importDefault(require("../models/usuario"));
+const cliente_1 = __importDefault(require("../models/cliente"));
+const tecnico_1 = __importDefault(require("../models/tecnico"));
 const generar_jwt_1 = require("../middlewares/generar-jwt");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // DATOS DE ENTRADA DEL LOGIN
@@ -37,12 +39,23 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 msg: 'La contraseña es incorrecta'
             });
         }
+        let rol = '';
+        if (yield cliente_1.default.findOne({ where: { UsuarioId: usuario.id } })) {
+            rol = 'cliente';
+        }
+        else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: false } })) {
+            rol = 'tecnico';
+        }
+        else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: true } })) {
+            rol = 'admin';
+        }
         // GENERAR TOKEN
         const token = yield (0, generar_jwt_1.generarJWT)(usuario.id);
         // RETORNAR USUARIO Y TOKEN
         return res.status(200).json({
             status: 200,
             usuario,
+            rol,
             token
         });
     }
