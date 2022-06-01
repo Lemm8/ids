@@ -19,6 +19,8 @@ router.get( '/:id', [
 ], getTecnico );
 
 router.post( '/', [
+    validarJWT,
+    isAdmin,
     check( 'correo' ).isEmail(),
     check( 'correo' ).custom( existeCorreo ),
     check( 'nombre', 'El nombre es obligatorio' ).exists(),
