@@ -16,22 +16,23 @@ export const getPedidos = async( req: Request, res: Response ) => {
     try {
         
         // LIMITE DEFAULT
-        let limit = 20;
+        let limit = 30;
 
         // OBTENER LIMITE DEL QUERY
         if ( req.query.limit ) {
             limit = parseInt( req.query.limit as any );
         }
         
-        // let where = {
-        //     estado: true,
-        //     ...( titulo && { titulo: { [ Op.like ]: `%${ titulo }%` } } ),
-        //     ...( area && { AreaId: area } ),
-        //     ...( usuario && { UsuarioId: usuario } ),
-        // }
+        let where = {
+            estado: true,
+            ...( req.query.cliente && { ClienteId: req.query.cliente } ),
+            ...( req.query.servicio && { ServicioId: req.query.servicio } ),
+            ...( req.query.titulo && { titulo: { [ Op.like ]: `%${ req.query.titulo }%` } } ),
+            ...( req.query.progreso && { progreso: { [ Op.like ]: `%${ req.query.progreso }%` } } ),
+        }
 
         // OBTENER TODAS LOS PEDIDOS
-        const pedidos = await Pedido.scope({ method: [ 'getInfo', limit ] }).findAndCountAll();
+        const pedidos = await Pedido.scope({ method: [ 'getInfo', limit, where ] }).findAndCountAll();
 
         // MANDAR MSG SI NO HAY REGISTROS
         if ( pedidos.count == 0 ) {

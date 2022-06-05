@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePedido = exports.putPedido = exports.postPedido = exports.getPedido = exports.getPedidos = void 0;
 const connection_1 = __importDefault(require("../db/connection"));
+const sequelize_1 = require("sequelize");
 const pedido_1 = __importDefault(require("../models/pedido"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const tecnico_1 = __importDefault(require("../models/tecnico"));
@@ -22,19 +23,14 @@ const tecnicoPedido_1 = __importDefault(require("../models/tecnicoPedido"));
 const getPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // LIMITE DEFAULT
-        let limit = 20;
+        let limit = 30;
         // OBTENER LIMITE DEL QUERY
         if (req.query.limit) {
             limit = parseInt(req.query.limit);
         }
-        // let where = {
-        //     estado: true,
-        //     ...( titulo && { titulo: { [ Op.like ]: `%${ titulo }%` } } ),
-        //     ...( area && { AreaId: area } ),
-        //     ...( usuario && { UsuarioId: usuario } ),
-        // }
+        let where = Object.assign(Object.assign(Object.assign(Object.assign({ estado: true }, (req.query.cliente && { ClienteId: req.query.cliente })), (req.query.servicio && { ServicioId: req.query.servicio })), (req.query.titulo && { titulo: { [sequelize_1.Op.like]: `%${req.query.titulo}%` } })), (req.query.progreso && { progreso: { [sequelize_1.Op.like]: `%${req.query.progreso}%` } }));
         // OBTENER TODAS LOS PEDIDOS
-        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit] }).findAndCountAll();
+        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit, where] }).findAndCountAll();
         // MANDAR MSG SI NO HAY REGISTROS
         if (pedidos.count == 0) {
             return res.status(404).json({

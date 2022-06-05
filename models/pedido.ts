@@ -1,13 +1,14 @@
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import {  DataTypes, Model } from 'sequelize';
 import db from '../db/connection';
 
-import Usuario from "../models/usuario";
 import Cliente from "../models/cliente";
 import Tecnico from "../models/tecnico";
 import Servicio from "../models/servicio";
 
 class Pedidos extends Model {
     declare id: number;
+    declare ClienteId: number;
+    declare ServicioId: number;
     declare titulo: string;
     declare descripcion: string;
     declare costo: number;
