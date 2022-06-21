@@ -3,7 +3,7 @@ import { check } from "express-validator";
 
 import { validarCampos } from "../middlewares/validar-campos";
 
-import { login } from "../controllers/auth";
+import { login, logout } from "../controllers/auth";
 
 const router = Router();
 
@@ -15,6 +15,8 @@ router.post( '/login', [
     validarCampos
 ], login );
 
+// LOGOUT
+router.get( '/logout', logout );
 
 
 export default router;

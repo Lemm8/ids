@@ -1,5 +1,6 @@
 import express , { Application } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import clientesRoutes from '../routes/cliente';
 import usuariosRoutes from '../routes/usuario';
@@ -7,6 +8,7 @@ import tecnicosRoutes from '../routes/tecnico';
 import serviciosRoutes from '../routes/servicio';
 import pedidosRoutes from '../routes/pedido';
 import authRoutes from '../routes/auth';
+import refreshRoutes from '../routes/refresh';
 
 import db from '../db/connection';
 
@@ -23,7 +25,8 @@ class Server {
         tecnicos: '/api/tecnicos',
         servicios: '/api/servicios',
         pedidos: '/api/pedidos',
-        auth: '/api/auth'
+        auth: '/api/auth',
+        refresh: '/api/refresh'
     };
 
     constructor() {
@@ -63,6 +66,9 @@ class Server {
 
         // LECTURA DEL BODY
         this.app.use( express.json() );
+        
+        // COOKIE PARSER
+        this.app.use( cookieParser() );
 
         // CARPETA PÚBLICA    
         this.app.use( express.static( 'public' ) );
@@ -76,6 +82,7 @@ class Server {
         this.app.use( this.apiPaths.servicios, serviciosRoutes );
         this.app.use( this.apiPaths.pedidos, pedidosRoutes );
         this.app.use( this.apiPaths.auth, authRoutes );
+        this.app.use( this.apiPaths.refresh, refreshRoutes );
     }
 
 

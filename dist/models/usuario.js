@@ -30,7 +30,10 @@ Usuarios.init({
         type: sequelize_1.DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
-    }
+    },
+    // refreshToken: {
+    //     type: 
+    // }
 }, {
     // Other model options go here
     sequelize: connection_1.default,

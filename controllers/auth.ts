@@ -6,7 +6,15 @@ import Usuario from "../models/usuario";
 import Cliente from "../models/cliente";
 import Tecnico from "../models/tecnico";
 
-import { generarJWT } from '../middlewares/generar-jwt';
+import jwt from 'jsonwebtoken';
+
+import { generarJWT, generarRefreshJWT } from '../middlewares/generar-jwt';
+
+// INTERFAZ DEL PAYLOAD
+interface JwtPayload {
+    id: string,
+    correo: string
+}
 
 export const login = async ( req: Request, res: Response ) => {
 
@@ -47,6 +55,10 @@ export const login = async ( req: Request, res: Response ) => {
 
         // GENERAR TOKEN
         const token = await generarJWT( usuario.id );
+        const refreshToken = await generarRefreshJWT( usuario.id );
+
+        // GUARDAR REFRESH TOKEN COMO HTTP ONLY PARA NO SER LEIDA EN JS
+        res.cookie( 'jwt', refreshToken, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 } );
 
         // RETORNAR USUARIO Y TOKEN
         return res.status( 200 ).json({
@@ -64,5 +76,35 @@ export const login = async ( req: Request, res: Response ) => {
             error
         });
     }
+
+}
+
+export const logout = async ( req: Request, res: Response ) => {
+
+    // BORRAR TOKEN
+
+    // BUSCAR TOKEN EN LAS COOKIES
+    const cookies = req.cookies;
+    if ( !cookies?.jwt ) {
+        return res.status( 204 ).json({
+            error: 'No se encuentra el token en la cookies'
+        })
+    }
+    const refreshToken = cookies.jwt;
+
+    // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
+    const { id } = jwt.verify( refreshToken, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3') as JwtPayload;
+
+    // ENCONTRAR USUARIO CON BASE A CORREO
+    const usuario = await Usuario.findOne({ where: { id } });
+
+    // BORRAR COOKIE 
+    if ( !usuario || !usuario.estado ) { 
+        res.clearCookie( 'jwt', { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 } );
+        return res.status( 204 );
+    }
+
+    res.clearCookie( 'jwt', { httpOnly: true } );
+    return res.sendStatus( 204 );
 
 }

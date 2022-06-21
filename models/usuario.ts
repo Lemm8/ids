@@ -37,7 +37,11 @@ Usuarios.init({
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
-    }
+    },
+
+    // refreshToken: {
+    //     type: 
+    // }
     
 }, {
   // Other model options go here

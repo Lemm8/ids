@@ -11,5 +11,7 @@ router.post('/login', [
     (0, express_validator_1.check)('contrasena').exists(),
     validar_campos_1.validarCampos
 ], auth_1.login);
+// LOGOUT
+router.get('/logout', auth_1.logout);
 exports.default = router;
 //# sourceMappingURL=auth.js.map

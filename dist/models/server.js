@@ -14,12 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cliente_1 = __importDefault(require("../routes/cliente"));
 const usuario_1 = __importDefault(require("../routes/usuario"));
 const tecnico_1 = __importDefault(require("../routes/tecnico"));
 const servicio_1 = __importDefault(require("../routes/servicio"));
 const pedido_1 = __importDefault(require("../routes/pedido"));
 const auth_1 = __importDefault(require("../routes/auth"));
+const refresh_1 = __importDefault(require("../routes/refresh"));
 const connection_1 = __importDefault(require("../db/connection"));
 require("../db/relations");
 class Server {
@@ -30,7 +32,8 @@ class Server {
             tecnicos: '/api/tecnicos',
             servicios: '/api/servicios',
             pedidos: '/api/pedidos',
-            auth: '/api/auth'
+            auth: '/api/auth',
+            refresh: '/api/refresh'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '3301';
@@ -58,6 +61,8 @@ class Server {
         this.app.use((0, cors_1.default)());
         // LECTURA DEL BODY
         this.app.use(express_1.default.json());
+        // COOKIE PARSER
+        this.app.use((0, cookie_parser_1.default)());
         // CARPETA PÚBLICA    
         this.app.use(express_1.default.static('public'));
     }
@@ -68,6 +73,7 @@ class Server {
         this.app.use(this.apiPaths.servicios, servicio_1.default);
         this.app.use(this.apiPaths.pedidos, pedido_1.default);
         this.app.use(this.apiPaths.auth, auth_1.default);
+        this.app.use(this.apiPaths.refresh, refresh_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

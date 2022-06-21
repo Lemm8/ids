@@ -12,32 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.login = void 0;
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
+exports.handleRefreshToken = void 0;
 const usuario_1 = __importDefault(require("../models/usuario"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const tecnico_1 = __importDefault(require("../models/tecnico"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const generar_jwt_1 = require("../middlewares/generar-jwt");
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // DATOS DE ENTRADA DEL LOGIN
-    const { correo, contrasena } = req.body;
+const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // BUSCAR TOKEN EN LAS COOKIES
+        const cookies = req.cookies;
+        if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt)) {
+            return res.status(401).json({
+                error: 'No se encuentra el token en la cookies'
+            });
+        }
+        const refreshToken = cookies.jwt;
+        // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
+        const { id } = jsonwebtoken_1.default.verify(refreshToken, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3');
         // ENCONTRAR USUARIO CON BASE A CORREO
-        const usuario = yield usuario_1.default.findOne({ where: { correo } });
+        const usuario = yield usuario_1.default.findOne({ where: { id } });
         // MANDAR MSG SI NO HAY USUARIO
         if (!usuario || !usuario.estado) {
             return res.status(400).json({
                 status: 400,
-                msg: `No existe un usuario con este correo: ${correo}`
-            });
-        }
-        // VALIDAR CONTRASENA
-        const validar = bcryptjs_1.default.compareSync(contrasena, usuario.contrasena);
-        if (!validar) {
-            return res.status(400).json({
-                status: 400,
-                msg: 'La contraseña es incorrecta'
+                msg: `No existe este usuario`
             });
         }
         let rol = '';
@@ -52,9 +51,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         // GENERAR TOKEN
         const token = yield (0, generar_jwt_1.generarJWT)(usuario.id);
-        const refreshToken = yield (0, generar_jwt_1.generarRefreshJWT)(usuario.id);
-        // GUARDAR REFRESH TOKEN COMO HTTP ONLY PARA NO SER LEIDA EN JS
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
         // RETORNAR USUARIO Y TOKEN
         return res.status(200).json({
             status: 200,
@@ -72,28 +68,5 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
 });
-exports.login = login;
-const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // BORRAR TOKEN
-    // BUSCAR TOKEN EN LAS COOKIES
-    const cookies = req.cookies;
-    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt)) {
-        return res.status(204).json({
-            error: 'No se encuentra el token en la cookies'
-        });
-    }
-    const refreshToken = cookies.jwt;
-    // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
-    const { id } = jsonwebtoken_1.default.verify(refreshToken, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3');
-    // ENCONTRAR USUARIO CON BASE A CORREO
-    const usuario = yield usuario_1.default.findOne({ where: { id } });
-    // BORRAR COOKIE 
-    if (!usuario || !usuario.estado) {
-        res.clearCookie('jwt', { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
-        return res.status(204);
-    }
-    res.clearCookie('jwt', { httpOnly: true });
-    return res.sendStatus(204);
-});
-exports.logout = logout;
-//# sourceMappingURL=auth.js.map
+exports.handleRefreshToken = handleRefreshToken;
+//# sourceMappingURL=refreshTokenController.js.map

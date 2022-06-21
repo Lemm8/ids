@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generarJWT = void 0;
+exports.generarRefreshJWT = exports.generarJWT = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // GENERAR JSON WEB TOKEN
 const generarJWT = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -21,7 +21,7 @@ const generarJWT = (id) => __awaiter(void 0, void 0, void 0, function* () {
         const payload = { id };
         // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
         jsonwebtoken_1.default.sign(payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
-            expiresIn: '20d'
+            expiresIn: '10m'
         }, (err, token) => {
             if (err) {
                 reject('No se pudo generar el token');
@@ -33,4 +33,27 @@ const generarJWT = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.generarJWT = generarJWT;
+// GENERAR JSON WEB TOKEN
+const generarRefreshJWT = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    // RETORNAR PROMESA 
+    return new Promise((resolve, reject) => {
+        const payload = { id };
+        // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
+        jsonwebtoken_1.default.sign(payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
+            expiresIn: '3d'
+        }, (err, token) => {
+            if (err) {
+                reject('No se pudo generar el token');
+            }
+            else {
+                resolve(token);
+            }
+        });
+    });
+});
+exports.generarRefreshJWT = generarRefreshJWT;
+module.exports = {
+    generarJWT: exports.generarJWT,
+    generarRefreshJWT: exports.generarRefreshJWT
+};
 //# sourceMappingURL=generar-jwt.js.map
