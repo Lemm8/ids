@@ -13,6 +13,8 @@ import refreshRoutes from '../routes/refresh';
 import db from '../db/connection';
 
 import "../db/relations";
+import corsOptions from '../config/corsOptions';
+import credentials from '../middlewares/credentials';
 
 class Server {
 
@@ -61,8 +63,11 @@ class Server {
 
     middlewares() {
 
+        // CREDENCIALES DEL SERVIDOR
+        this.app.use( credentials );
+
         // CORS
-        this.app.use( cors() );
+        this.app.use( cors( corsOptions ) );
 
         // LECTURA DEL BODY
         this.app.use( express.json() );
