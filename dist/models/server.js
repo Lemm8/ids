@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const cliente_1 = __importDefault(require("../routes/cliente"));
 const usuario_1 = __importDefault(require("../routes/usuario"));
 const tecnico_1 = __importDefault(require("../routes/tecnico"));
@@ -24,6 +26,8 @@ const auth_1 = __importDefault(require("../routes/auth"));
 const refresh_1 = __importDefault(require("../routes/refresh"));
 const connection_1 = __importDefault(require("../db/connection"));
 require("../db/relations");
+const corsOptions_1 = __importDefault(require("../config/corsOptions"));
+const credentials_1 = __importDefault(require("../middlewares/credentials"));
 class Server {
     constructor() {
         this.apiPaths = {
@@ -35,6 +39,7 @@ class Server {
             auth: '/api/auth',
             refresh: '/api/refresh'
         };
+        console.log(process.env.DATABASE);
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '3301';
         // CONECTAR CON LA BASE DE DATOS
@@ -57,8 +62,10 @@ class Server {
         });
     }
     middlewares() {
+        // CREDENCIALES DEL SERVIDOR
+        this.app.use(credentials_1.default);
         // CORS
-        this.app.use((0, cors_1.default)());
+        this.app.use((0, cors_1.default)(corsOptions_1.default));
         // LECTURA DEL BODY
         this.app.use(express_1.default.json());
         // COOKIE PARSER

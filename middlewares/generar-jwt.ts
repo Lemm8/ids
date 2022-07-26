@@ -10,7 +10,7 @@ export const generarJWT = async ( id: number ) => {
 
         // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
         jwt.sign( payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
-            expiresIn: '10m'
+            expiresIn: '2m'
         }, ( err, token ) => {
             if ( err ) {
                 reject( 'No se pudo generar el token' );

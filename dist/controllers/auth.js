@@ -50,17 +50,17 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: true } })) {
             rol = 'admin';
         }
-        // GENERAR TOKEN
-        const token = yield (0, generar_jwt_1.generarJWT)(usuario.id);
+        // GENERAR TOKEN DE ACCESO Y REFRESH
+        const accessToken = yield (0, generar_jwt_1.generarJWT)(usuario.id);
         const refreshToken = yield (0, generar_jwt_1.generarRefreshJWT)(usuario.id);
         // GUARDAR REFRESH TOKEN COMO HTTP ONLY PARA NO SER LEIDA EN JS
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 72 * 60 * 60 * 1000 });
         // RETORNAR USUARIO Y TOKEN
         return res.status(200).json({
             status: 200,
             usuario,
             rol,
-            token
+            token: accessToken
         });
     }
     catch (error) {
@@ -89,7 +89,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const usuario = yield usuario_1.default.findOne({ where: { id } });
     // BORRAR COOKIE 
     if (!usuario || !usuario.estado) {
-        res.clearCookie('jwt', { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
+        res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'none' });
         return res.status(204);
     }
     res.clearCookie('jwt', { httpOnly: true });

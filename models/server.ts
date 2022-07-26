@@ -1,6 +1,8 @@
 import express , { Application } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import clientesRoutes from '../routes/cliente';
 import usuariosRoutes from '../routes/usuario';
@@ -32,6 +34,8 @@ class Server {
     };
 
     constructor() {
+
+        console.log( process.env.DATABASE );
 
         this.app = express();
         this.port = process.env.PORT || '3301';

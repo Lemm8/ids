@@ -53,8 +53,8 @@ export const login = async ( req: Request, res: Response ) => {
             rol = 'admin'
         }
 
-        // GENERAR TOKEN
-        const token = await generarJWT( usuario.id );
+        // GENERAR TOKEN DE ACCESO Y REFRESH
+        const accessToken = await generarJWT( usuario.id );
         const refreshToken = await generarRefreshJWT( usuario.id );
 
         // GUARDAR REFRESH TOKEN COMO HTTP ONLY PARA NO SER LEIDA EN JS
@@ -65,7 +65,7 @@ export const login = async ( req: Request, res: Response ) => {
             status: 200,
             usuario,
             rol,
-            token
+            token: accessToken
         })
 
     } catch (error) {
