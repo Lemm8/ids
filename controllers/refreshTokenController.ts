@@ -19,7 +19,7 @@ export const handleRefreshToken = async ( req: Request, res: Response ) => {
     try {        
 
         // BUSCAR TOKEN EN LAS COOKIES
-        const cookies = req.cookies;
+        const cookies = req.cookies;        
 
         if ( !cookies?.jwt ) {
             return res.status( 401 ).json({

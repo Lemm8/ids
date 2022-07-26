@@ -54,7 +54,8 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const accessToken = yield (0, generar_jwt_1.generarJWT)(usuario.id);
         const refreshToken = yield (0, generar_jwt_1.generarRefreshJWT)(usuario.id);
         // GUARDAR REFRESH TOKEN COMO HTTP ONLY PARA NO SER LEIDA EN JS
-        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 72 * 60 * 60 * 1000 });
+        //res.cookie( 'jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 72 * 60 * 60 * 1000 } );
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
         // RETORNAR USUARIO Y TOKEN
         return res.status(200).json({
             status: 200,
