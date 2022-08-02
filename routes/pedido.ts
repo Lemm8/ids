@@ -10,7 +10,9 @@ import { validarJWT, isAdmin, isCliente, isUsuario, isClienteOrAdmin } from '../
 
 const router = Router();
 
-router.get( '/', getPedidos );
+router.get( '/', [
+    validarJWT,
+], getPedidos );
 
 router.get( '/:id', [
     validarJWT,
