@@ -104,7 +104,7 @@ export const logout = async ( req: Request, res: Response ) => {
         return res.status( 204 );
     }
 
-    res.clearCookie( 'jwt', { httpOnly: true } );
+    res.clearCookie( 'jwt', { httpOnly: true, secure: true, sameSite: 'none' } );
     return res.sendStatus( 204 );
 
 }
