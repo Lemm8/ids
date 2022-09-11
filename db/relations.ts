@@ -37,6 +37,6 @@ Pedido.belongsTo( Servicio, {
 });
 
 // MUCHOS A MUCHOS, CREARÁ TABLA TecnicoPedido
-Pedido.belongsToMany( Tecnico, { through: 'TecnicoPedido', onDelete: 'CASCADE' } );
-Tecnico.belongsToMany( Pedido, { through: 'TecnicoPedido', onDelete: 'CASCADE' } );
+Pedido.belongsToMany( Tecnico, { through: 'TecnicoPedidos', onDelete: 'CASCADE' } );
+Tecnico.belongsToMany( Pedido, { through: 'TecnicoPedidos', onDelete: 'CASCADE' } );
 

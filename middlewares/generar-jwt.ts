@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+require('dotenv').config({ path: process.cwd()+'/.env' });
 
 // GENERAR JSON WEB TOKEN
 export const generarJWT = async ( id: number ) => {
@@ -9,8 +10,8 @@ export const generarJWT = async ( id: number ) => {
         const payload = { id };
 
         // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
-        jwt.sign( payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
-            expiresIn: '2m'
+        jwt.sign( payload, process.env.SECRETORPRIVATEKEY!, {
+            expiresIn: '15m'
         }, ( err, token ) => {
             if ( err ) {
                 reject( 'No se pudo generar el token' );
@@ -32,7 +33,7 @@ export const generarRefreshJWT = async ( id: number ) => {
         const payload = { id };
 
         // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
-        jwt.sign( payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
+        jwt.sign( payload, process.env.SECRETORPRIVATEKEY!, {
             expiresIn: '3d'
         }, ( err, token ) => {
             if ( err ) {

@@ -43,14 +43,18 @@ export const handleRefreshToken = async ( req: Request, res: Response ) => {
             });
         }
 
-        let rol = ''
+        let rol = '';
+        let info;
 
         if ( await Cliente.findOne({ where: { UsuarioId: usuario.id } }) ) {
             rol = 'cliente'
+            info = await Cliente.findOne({ where: { UsuarioId: usuario.id } });
         } else if ( await Tecnico.findOne({ where: { UsuarioId: usuario.id, is_admin: false } }) ) {
-            rol = 'tecnico'
+            rol = 'tecnico';
+            info = await Tecnico.findOne({ where: { UsuarioId: usuario.id, is_admin: false } })
         } else if ( await Tecnico.findOne({ where: { UsuarioId: usuario.id, is_admin: true } }) ) {
-            rol = 'admin'
+            rol = 'admin';
+            info = await Tecnico.findOne({ where: { UsuarioId: usuario.id, is_admin: true } });
         }
 
         // GENERAR TOKEN
@@ -60,6 +64,7 @@ export const handleRefreshToken = async ( req: Request, res: Response ) => {
         return res.status( 200 ).json({
             status: 200,
             usuario,
+            info,
             rol,
             token
         })

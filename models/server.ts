@@ -1,9 +1,6 @@
 import express , { Application } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-dotenv.config();
-
 import clientesRoutes from '../routes/cliente';
 import usuariosRoutes from '../routes/usuario';
 import tecnicosRoutes from '../routes/tecnico';
@@ -11,6 +8,7 @@ import serviciosRoutes from '../routes/servicio';
 import pedidosRoutes from '../routes/pedido';
 import authRoutes from '../routes/auth';
 import refreshRoutes from '../routes/refresh';
+import emailRoutes from '../routes/email';
 
 import db from '../db/connection';
 
@@ -30,15 +28,14 @@ class Server {
         servicios: '/api/servicios',
         pedidos: '/api/pedidos',
         auth: '/api/auth',
-        refresh: '/api/refresh'
+        refresh: '/api/refresh',
+        email: '/api/email',
     };
 
     constructor() {
-
-        console.log( process.env.DATABASE );
-
         this.app = express();
-        this.port = process.env.PORT || '3301';
+        this.port = process.env.PORT!;
+        // this.port = process.env.PORT || '3301';
         
         // CONECTAR CON LA BASE DE DATOS
         this.dbConnection();
@@ -48,13 +45,11 @@ class Server {
 
         // DEINFIR RUTAS
         this.routes();
-
     }
 
 
     async dbConnection() {
-        try {
-            
+        try {            
             await db.authenticate();
             //await db.sync( { alter: true, force: true } );
             console.log( 'Database online' );
@@ -66,7 +61,6 @@ class Server {
 
 
     middlewares() {
-
         // CREDENCIALES DEL SERVIDOR
         this.app.use( credentials );
 
@@ -81,7 +75,6 @@ class Server {
 
         // CARPETA PÚBLICA    
         this.app.use( express.static( 'public' ) );
-
     }
 
     routes() {
@@ -92,6 +85,7 @@ class Server {
         this.app.use( this.apiPaths.pedidos, pedidosRoutes );
         this.app.use( this.apiPaths.auth, authRoutes );
         this.app.use( this.apiPaths.refresh, refreshRoutes );
+        this.app.use( this.apiPaths.email, emailRoutes );
     }
 
 

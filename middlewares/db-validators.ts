@@ -48,7 +48,7 @@ export const existeTelefono = async ( telefono: string ) => {
 export const existeCliente = async ( id: number ) => {
     const usuario = await Cliente.scope('getUsuario').findOne({
         where: {
-            id                  
+            id                
         }
     }); 
 

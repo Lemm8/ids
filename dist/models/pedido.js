@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../db/connection"));
-const cliente_1 = __importDefault(require("../models/cliente"));
-const tecnico_1 = __importDefault(require("../models/tecnico"));
-const servicio_1 = __importDefault(require("../models/servicio"));
+const cliente_1 = __importDefault(require("./cliente"));
+const tecnico_1 = __importDefault(require("./tecnico"));
+const servicio_1 = __importDefault(require("./servicio"));
 class Pedidos extends sequelize_1.Model {
 }
 Pedidos.init({
@@ -62,6 +62,7 @@ Pedidos.init({
                     exclude: ['ClienteId', 'ServicioId']
                 },
                 limit,
+                order: [['createdAt', 'DESC']],
                 where,
                 include: [
                     {
@@ -81,7 +82,6 @@ Pedidos.init({
                     {
                         model: tecnico_1.default,
                         as: 'Tecnicos',
-                        required: true,
                         attributes: {
                             exclude: ['createdAt', 'updatedAt', 'UsuarioId', 'TecnicoPedido']
                         }

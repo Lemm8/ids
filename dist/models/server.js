@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
 const cliente_1 = __importDefault(require("../routes/cliente"));
 const usuario_1 = __importDefault(require("../routes/usuario"));
 const tecnico_1 = __importDefault(require("../routes/tecnico"));
@@ -24,6 +22,7 @@ const servicio_1 = __importDefault(require("../routes/servicio"));
 const pedido_1 = __importDefault(require("../routes/pedido"));
 const auth_1 = __importDefault(require("../routes/auth"));
 const refresh_1 = __importDefault(require("../routes/refresh"));
+const email_1 = __importDefault(require("../routes/email"));
 const connection_1 = __importDefault(require("../db/connection"));
 require("../db/relations");
 const corsOptions_1 = __importDefault(require("../config/corsOptions"));
@@ -37,11 +36,12 @@ class Server {
             servicios: '/api/servicios',
             pedidos: '/api/pedidos',
             auth: '/api/auth',
-            refresh: '/api/refresh'
+            refresh: '/api/refresh',
+            email: '/api/email',
         };
-        console.log(process.env.DATABASE);
         this.app = (0, express_1.default)();
-        this.port = process.env.PORT || '3301';
+        this.port = process.env.PORT;
+        // this.port = process.env.PORT || '3301';
         // CONECTAR CON LA BASE DE DATOS
         this.dbConnection();
         // DEFINIR MIDDLEWARES
@@ -81,6 +81,7 @@ class Server {
         this.app.use(this.apiPaths.pedidos, pedido_1.default);
         this.app.use(this.apiPaths.auth, auth_1.default);
         this.app.use(this.apiPaths.refresh, refresh_1.default);
+        this.app.use(this.apiPaths.email, email_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

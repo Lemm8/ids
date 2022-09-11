@@ -31,10 +31,7 @@ router.post( '/', [
     check( 'cliente', 'El cliente es obligatorio' ).exists(),
     check( 'cliente' ).custom( existeCliente ),
     check( 'servicio', 'El servicio es obligatorio' ).exists(),
-    check( 'servicio' ).custom( existeServicio ),
-    check( 'tecnicos', 'Los tecnicos son obligatorios' ).exists(),
-    check( 'tecnicos' ).isArray(),
-    check( 'tecnicos.*' ).custom( existeTecnico ),
+    check( 'servicio' ).custom( existeServicio ),    
     validarCampos
 ], postPedido );
 
@@ -42,11 +39,11 @@ router.put( '/:id', [
     validarJWT,
     isUsuario,
     check( 'id' ).custom( existePedido ),
-    check( 'titulo', 'El titulo es obligatorio' ).exists(),
-    check( 'descripcion', 'La descripción es obligatoria' ).exists(),
     check( 'costo', 'El costo es obligatorio' ).exists(),
     check( 'costo', 'El costo debe ser numérico' ).isNumeric().optional({ nullable: true, checkFalsy: true }),
     check( 'lugar_entrega').optional({ nullable: true, checkFalsy: true }),
+    check( 'tecnicos' ).isArray(),
+    check( 'tecnicos.*' ).custom( existeTecnico ),
     validarCampos
 ], putPedido )
 

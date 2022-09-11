@@ -36,6 +36,6 @@ pedido_1.default.belongsTo(servicio_1.default, {
     onDelete: 'CASCADE'
 });
 // MUCHOS A MUCHOS, CREARÁ TABLA TecnicoPedido
-pedido_1.default.belongsToMany(tecnico_1.default, { through: 'TecnicoPedido', onDelete: 'CASCADE' });
-tecnico_1.default.belongsToMany(pedido_1.default, { through: 'TecnicoPedido', onDelete: 'CASCADE' });
+pedido_1.default.belongsToMany(tecnico_1.default, { through: 'TecnicoPedidos', onDelete: 'CASCADE' });
+tecnico_1.default.belongsToMany(pedido_1.default, { through: 'TecnicoPedidos', onDelete: 'CASCADE' });
 //# sourceMappingURL=relations.js.map

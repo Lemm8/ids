@@ -41,25 +41,29 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         let rol = '';
+        let info;
         if (yield cliente_1.default.findOne({ where: { UsuarioId: usuario.id } })) {
             rol = 'cliente';
+            info = yield cliente_1.default.findOne({ where: { UsuarioId: usuario.id } });
         }
         else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: false } })) {
             rol = 'tecnico';
+            info = yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: false } });
         }
         else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: true } })) {
             rol = 'admin';
+            info = yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: true } });
         }
         // GENERAR TOKEN DE ACCESO Y REFRESH
         const accessToken = yield (0, generar_jwt_1.generarJWT)(usuario.id);
         const refreshToken = yield (0, generar_jwt_1.generarRefreshJWT)(usuario.id);
         // GUARDAR REFRESH TOKEN COMO HTTP ONLY PARA NO SER LEIDA EN JS
-        //res.cookie( 'jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 72 * 60 * 60 * 1000 } );
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 72 * 60 * 60 * 1000 });
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 72 * 60 * 60 * 1000 });
         // RETORNAR USUARIO Y TOKEN
         return res.status(200).json({
             status: 200,
             usuario,
+            info,
             rol,
             token: accessToken
         });
@@ -93,7 +97,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'none' });
         return res.status(204);
     }
-    res.clearCookie('jwt', { httpOnly: true });
+    res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'none' });
     return res.sendStatus(204);
 });
 exports.logout = logout;

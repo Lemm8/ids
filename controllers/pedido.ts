@@ -8,8 +8,58 @@ import Pedido from "../models/pedido";
 import Cliente from "../models/cliente";
 import Tecnico from "../models/tecnico";
 import Servicio from "../models/servicio";
-import TecnicoPedido from "../models/tecnicoPedido";
+import TecnicoPedidos from "../models/tecnicoPedido";
 
+import nodemailer from 'nodemailer';
+require('dotenv').config({ path: process.cwd()+'/.env' });
+
+const htmlCreado = ( pedido: Pedido, servicio: String ) => {        
+    let html = `<h1>Haz realizado un pedido</h1><hr>
+                    <h5>Tu pedido con el titulo: ${pedido.titulo} se actualizó</h5>
+                    <h5>Ahora el pedido está en espera, dentro de los siguientes días estarás recibiendo actualizaciones sobre tu pedido, checa tu correo!</h5>
+                    <h5>Id de tu pedido: ${pedido.id}</h5>
+                    <h5>Servicio: ${servicio}</h5><hr>`;
+    
+    return html
+}
+
+const htmlActualizacion = ( tecnicos: string[], nota: string, progreso: string, pedido: Pedido, servicio: Servicio ) => {    
+    const tecnicosList = tecnicos.map( tecnico => `<li>${ tecnico }</li>` );
+    let html = `<h1>Tu pedido se ha actualizado</h1><hr>
+                    <h5>Tu pedido con el titulo: ${pedido.titulo} se actualizó</h5>
+                    <h5>Ahora el pedido está ${progreso}</h5>
+                    <h5>Servicio: ${servicio.nombre}</h5><hr>`;
+
+    nota === undefined || nota === '' 
+        ? html.concat( 
+            `<h5>Nota de actualización ${nota}</h5>`, 
+            `<h5>Cualquier duda, puede contactar a uno de los técnicos encargados</h5><ul>${tecnicosList}</ul>`) 
+        : html.concat( `<h5>Cualquier duda, puede contactar a uno de los técnicos encargados</h5><ul>${tecnicosList}</ul>` );
+    
+    return html
+}
+
+const htmlListo = ( pedido: Pedido, tecnicos: Tecnico[] ) => {
+    const tecnicosList = tecnicos.map( tecnico => `<li>${tecnico.nombre}</li>` )
+
+    return `<h1>Tu pedido está listo</h1><hr>
+            <h3>El pedido ${pedido.titulo} está listo</h3>
+            <h3>Técnicos encargados:</h3><ul>${tecnicosList}</ul>
+            <h3>Costo total del pedido: ${ pedido.costo }</h3>
+            <h5>Fecha de solicitud: ${pedido.fecha_solicitud}</h5>
+            <h5>Fecha de completo: ${pedido.updatedAt}</h5>`
+}
+
+let transporter = nodemailer.createTransport({
+    name: 'idslapaz.com',
+    host: process.env.HOSTNAME,
+    port: 26,
+    secure: false,
+    auth: {
+        user: process.env.CONTACT_MAIL,
+        pass: process.env.MAIL_PASSWORD
+    }
+});
 
 export const getPedidos = async( req: Request, res: Response ) => {
 
@@ -26,6 +76,7 @@ export const getPedidos = async( req: Request, res: Response ) => {
         let where = {
             estado: true,
             ...( req.query.cliente && { ClienteId: req.query.cliente } ),
+            // ...( req.query.cliente && { ClienteId: req.query.cliente } ),
             ...( req.query.servicio && { ServicioId: req.query.servicio } ),
             ...( req.query.titulo && { titulo: { [ Op.like ]: `%${ req.query.titulo }%` } } ),
             ...( req.query.progreso && { progreso: { [ Op.like ]: `%${ req.query.progreso }%` } } ),
@@ -101,7 +152,7 @@ export const postPedido = async ( req: Request, res: Response ) => {
         const result = await db.transaction( async ( t ) => {
             
             // OBTENER CAMPOS
-            const { cliente, tecnicos, servicio, titulo, descripcion, costo, lugar_entrega } = req.body;
+            const { cliente, servicio, titulo, descripcion, costo, lugar_entrega } = req.body;            
 
             // CREAR PEDIDO
             let pedido = await Pedido.create({
@@ -113,13 +164,8 @@ export const postPedido = async ( req: Request, res: Response ) => {
                 ServicioId: servicio
             });
             
-            tecnicos.forEach( async (tecnico: number) => {
-                await TecnicoPedido.create({ PedidoId: pedido.id, TecnicoId: tecnico });
-            });
-
-            let clienteResult = await Cliente.scope("getUsuario").findOne({where: { id: cliente }});
+            let clienteResult = await Cliente.scope("getUsuario").findOne({where: { UsuarioId: cliente }});
             let servicioResult = await Servicio.scope("getInfo").findOne({ where: { id: servicio } });
-            let tecnicosResult = await Tecnico.scope("getUsuario").findAll({where: { id: tecnicos }});
 
             let respuesta = {
                 id: pedido.id,
@@ -129,10 +175,16 @@ export const postPedido = async ( req: Request, res: Response ) => {
                 lugar_entrega,
                 cliente: clienteResult,
                 servicio: servicioResult,
-                tecnicos: tecnicosResult,
                 createdAt: pedido.createdAt,
                 updatedAt: pedido.updatedAt
             }
+
+            const info = await transporter.sendMail({
+                from: process.env.CONTACT_MAIL,
+                to: cliente?.Usuario.correo,
+                subject: "Actualización de pedido",
+                html: htmlCreado( pedido, servicioResult!.nombre )
+            })
 
             return res.status( 200 ).json({
                 status: 200,
@@ -156,15 +208,13 @@ export const postPedido = async ( req: Request, res: Response ) => {
 
 export const putPedido = async ( req: Request, res: Response ) => {
  
-    try {
-        
+    try {        
         const result = await db.transaction( async ( t ) => {
-
             // OBTENER ID
             const { id } = req.params;
 
             // OBTENER CAMPOS
-            const { titulo, descripcion, costo, lugar_entrega, progreso } = req.body;
+            const { titulo, descripcion, costo, lugar_entrega, progreso, tecnicos, nota } = req.body;
 
             // BUSCAR POR ID
             let pedido = await Pedido.scope("getInfo").findOne({ where: { id } });
@@ -173,7 +223,17 @@ export const putPedido = async ( req: Request, res: Response ) => {
             if ( titulo ) pedido!.titulo = titulo;
             if ( descripcion ) pedido!.descripcion = descripcion;
             if ( costo ) pedido!.costo = costo;
-            if ( lugar_entrega ) pedido!.lugar_entrega = lugar_entrega; 
+            if ( lugar_entrega ) pedido!.lugar_entrega = lugar_entrega;                         
+
+            // ACTUALIZAR TECNICOS
+            if ( tecnicos !== undefined || tecnicos.length !== 0 ) {
+                tecnicos.forEach( async (tecnico: number) => {
+                    const existeTecnico = await TecnicoPedidos.findOne( { where: { TecnicoId: tecnico, PedidoId: id } } );                    
+                    if ( !existeTecnico ) {
+                        await TecnicoPedidos.create({ PedidoId: id, TecnicoId: tecnico });
+                    }
+                });
+            }             
 
             if ( progreso ) {
                 switch ( progreso ) {
@@ -195,20 +255,36 @@ export const putPedido = async ( req: Request, res: Response ) => {
             }
 
             pedido = await pedido!.save({ transaction: t });
+            const cliente = await Cliente.scope("getUsuario").findOne({ where: { id: pedido.Cliente.id } })
+            const tecnicos_id = pedido.Tecnicos.map( tecnico => tecnico.id );
+            const tecnicos_info = await Tecnico.scope("getUsuario").findAll({ where: { id: tecnicos_id } });
+            const tecnicos_correo = tecnicos_info.map( tecnico => tecnico.Usuario.correo );
+
+            const info = await transporter.sendMail({
+                from: process.env.CONTACT_MAIL,
+                to: cliente?.Usuario.correo,
+                subject: "Actualización de pedido",
+                html: progreso === 'Listo' 
+                    ? htmlListo( pedido, pedido.Tecnicos ) 
+                    : htmlActualizacion( tecnicos_correo, nota, progreso, pedido, pedido.Servicio )
+            })
+
+            console.log( info );
 
             return res.status( 200 ).json({
                 status: 200,
                 msg: 'Pedido actualizado',
                 pedido
-            });   
+            });
 
         });
 
     } catch (error) {
+        console.log( error )
         return res.status( 500 ).json({
             status: 500,
             msg: 'Error en el servidor',
-            error
+            error: error
         });
     }
    

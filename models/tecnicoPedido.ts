@@ -1,17 +1,17 @@
 import { Sequelize, DataTypes, Model } from 'sequelize';
 import db from '../db/connection';
 
-class TecnicoPedido extends Model {
+class TecnicoPedidos extends Model {
     declare TecnicoId: number;
     declare PedidoId: number
 }
 
-TecnicoPedido.init({}, {
+TecnicoPedidos.init({}, {
     sequelize: db,
-    modelName: 'TecnicoPedido'
+    modelName: 'TecnicoPedidos'
 });
 
 // the defined model is the class itself
-console.log( 'TecnicoPedido:', TecnicoPedido === db.models.TecnicoPedido );
+console.log( 'TecnicoPedidos:', TecnicoPedidos === db.models.TecnicoPedido );
 
-export default TecnicoPedido;
+export default TecnicoPedidos;

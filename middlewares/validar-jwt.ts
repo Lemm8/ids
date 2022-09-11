@@ -1,4 +1,5 @@
 import { Response, Request, NextFunction } from 'express';
+require('dotenv').config({ path: process.cwd()+'/.env' });
 
 import Usuario from '../models/usuario';
 import Cliente from '../models/cliente';
@@ -27,7 +28,7 @@ export const validarJWT = async ( req: Request, res: Response, next: NextFunctio
         }
 
         // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
-        const { id } = jwt.verify( token, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3') as JwtPayload;
+        const { id } = jwt.verify( token, process.env.SECRETORPRIVATEKEY! ) as JwtPayload;
 
         // LEER USUARIO CORRESPONDIENTE
         const usuario = await Usuario.findOne({

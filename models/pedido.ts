@@ -1,9 +1,10 @@
 import {  DataTypes, Model } from 'sequelize';
 import db from '../db/connection';
 
-import Cliente from "../models/cliente";
-import Tecnico from "../models/tecnico";
-import Servicio from "../models/servicio";
+import Cliente from "./cliente";
+import Tecnico from "./tecnico";
+import Servicio from "./servicio";
+import Usuarios from './usuario';
 
 class Pedidos extends Model {
     declare id: number;
@@ -22,6 +23,10 @@ class Pedidos extends Model {
     declare servicio: Servicio;
     declare createdAt: string;
     declare updatedAt: string;
+    declare Tecnicos: Array<Tecnico>;
+    declare Usuario: Usuarios;
+    declare Cliente: Cliente;
+    declare Servicio: Servicio;
 }
 
 Pedidos.init({
@@ -86,6 +91,7 @@ Pedidos.init({
                     exclude: [ 'ClienteId', 'ServicioId' ]
                 },
                 limit,
+                order: [[ 'createdAt', 'DESC' ]],
                 where,
                 include:[
                     {
@@ -105,7 +111,6 @@ Pedidos.init({
                     {
                         model: Tecnico,
                         as: 'Tecnicos',
-                        required: true,
                         attributes: {
                             exclude: [ 'createdAt', 'updatedAt', 'UsuarioId', 'TecnicoPedido' ]
                         }

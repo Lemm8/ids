@@ -14,14 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generarRefreshJWT = exports.generarJWT = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+require('dotenv').config({ path: process.cwd() + '/.env' });
 // GENERAR JSON WEB TOKEN
 const generarJWT = (id) => __awaiter(void 0, void 0, void 0, function* () {
     // RETORNAR PROMESA 
     return new Promise((resolve, reject) => {
         const payload = { id };
         // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
-        jsonwebtoken_1.default.sign(payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
-            expiresIn: '2m'
+        jsonwebtoken_1.default.sign(payload, process.env.SECRETORPRIVATEKEY, {
+            expiresIn: '15m'
         }, (err, token) => {
             if (err) {
                 reject('No se pudo generar el token');
@@ -39,7 +40,7 @@ const generarRefreshJWT = (id) => __awaiter(void 0, void 0, void 0, function* ()
     return new Promise((resolve, reject) => {
         const payload = { id };
         // GENERAR TOKEN CON EL PAYLOAD Y PRIVATEKEY
-        jsonwebtoken_1.default.sign(payload, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3', {
+        jsonwebtoken_1.default.sign(payload, process.env.SECRETORPRIVATEKEY, {
             expiresIn: '3d'
         }, (err, token) => {
             if (err) {

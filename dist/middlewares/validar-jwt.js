@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isClienteOrAdmin = exports.isUsuario = exports.isTecnicoOrAdmin = exports.isAdmin = exports.isTecnico = exports.isCliente = exports.validarJWT = void 0;
+require('dotenv').config({ path: process.cwd() + '/.env' });
 const usuario_1 = __importDefault(require("../models/usuario"));
 const cliente_1 = __importDefault(require("../models/cliente"));
 const tecnico_1 = __importDefault(require("../models/tecnico"));
@@ -28,7 +29,7 @@ const validarJWT = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             });
         }
         // VERIFICAR JWT Y OBTENER PAYLOAD ( UID ) 
-        const { id } = jsonwebtoken_1.default.verify(token, process.env.SECRETORPRIVATEKEY || 'EoHmk179LD0@K90jmGe3');
+        const { id } = jsonwebtoken_1.default.verify(token, process.env.SECRETORPRIVATEKEY);
         // LEER USUARIO CORRESPONDIENTE
         const usuario = yield usuario_1.default.findOne({
             where: {

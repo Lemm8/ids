@@ -40,14 +40,18 @@ const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
             });
         }
         let rol = '';
+        let info;
         if (yield cliente_1.default.findOne({ where: { UsuarioId: usuario.id } })) {
             rol = 'cliente';
+            info = yield cliente_1.default.findOne({ where: { UsuarioId: usuario.id } });
         }
         else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: false } })) {
             rol = 'tecnico';
+            info = yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: false } });
         }
         else if (yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: true } })) {
             rol = 'admin';
+            info = yield tecnico_1.default.findOne({ where: { UsuarioId: usuario.id, is_admin: true } });
         }
         // GENERAR TOKEN
         const token = yield (0, generar_jwt_1.generarJWT)(usuario.id);
@@ -55,6 +59,7 @@ const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.status(200).json({
             status: 200,
             usuario,
+            info,
             rol,
             token
         });
