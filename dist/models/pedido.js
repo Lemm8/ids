@@ -56,7 +56,7 @@ Pedidos.init({
     sequelize: connection_1.default,
     modelName: 'Pedidos',
     scopes: {
-        getInfo: function (limit, where) {
+        getInfo: function (limit, where, whereTecnico) {
             return {
                 attributes: {
                     exclude: ['ClienteId', 'ServicioId']
@@ -84,7 +84,8 @@ Pedidos.init({
                         as: 'Tecnicos',
                         attributes: {
                             exclude: ['createdAt', 'updatedAt', 'UsuarioId', 'TecnicoPedido']
-                        }
+                        },
+                        where: whereTecnico
                     }
                 ]
             };

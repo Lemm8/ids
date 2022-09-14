@@ -33,12 +33,12 @@ const htmlCreado = (pedido, servicio) => {
 const htmlActualizacion = (tecnicos, nota, progreso, pedido, servicio) => {
     const tecnicosList = tecnicos.map(tecnico => `<li>${tecnico}</li>`);
     let html = `<h1>Tu pedido se ha actualizado</h1><hr>
-                    <h5>Tu pedido con el titulo: ${pedido.titulo} se actualizó</h5>
-                    <h5>Ahora el pedido está ${progreso}</h5>
+                    <h5>Tu pedido con el titulo: "${pedido.titulo}" se actualizó</h5>
+                    <h5>El pedido está: ${progreso}</h5>
                     <h5>Servicio: ${servicio.nombre}</h5><hr>`;
     nota === undefined || nota === ''
-        ? html.concat(`<h5>Nota de actualización ${nota}</h5>`, `<h5>Cualquier duda, puede contactar a uno de los técnicos encargados</h5><ul>${tecnicosList}</ul>`)
-        : html.concat(`<h5>Cualquier duda, puede contactar a uno de los técnicos encargados</h5><ul>${tecnicosList}</ul>`);
+        ? html = html.concat(`<h5>Cualquier duda, puede contactar a uno de los técnicos encargados</h5><ul>${tecnicosList}</ul>`)
+        : html = html.concat(`<h5>Nota de actualización: ${nota}</h5>`, `<h5>Cualquier duda, puede contactar a uno de los técnicos encargados</h5><ul>${tecnicosList}</ul>`);
     return html;
 };
 const htmlListo = (pedido, tecnicos) => {
@@ -69,8 +69,9 @@ const getPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             limit = parseInt(req.query.limit);
         }
         let where = Object.assign(Object.assign(Object.assign(Object.assign({ estado: true }, (req.query.cliente && { ClienteId: req.query.cliente })), (req.query.servicio && { ServicioId: req.query.servicio })), (req.query.titulo && { titulo: { [sequelize_1.Op.like]: `%${req.query.titulo}%` } })), (req.query.progreso && { progreso: { [sequelize_1.Op.like]: `%${req.query.progreso}%` } }));
+        let whereTecnico = Object.assign({}, (req.query.tecnico && { id: req.query.tecnico }));
         // OBTENER TODAS LOS PEDIDOS
-        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit, where] }).findAndCountAll();
+        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit, where, whereTecnico] }).findAndCountAll();
         // MANDAR MSG SI NO HAY REGISTROS
         if (pedidos.count == 0) {
             return res.status(404).json({
