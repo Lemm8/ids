@@ -7,11 +7,8 @@ const validar_campos_1 = require("../middlewares/validar-campos");
 const db_validators_1 = require("../middlewares/db-validators");
 const validar_jwt_1 = require("../middlewares/validar-jwt");
 const router = (0, express_1.Router)();
-router.get('/', [
-    validar_jwt_1.validarJWT,
-], pedido_1.getPedidos);
+router.get('/', [], pedido_1.getPedidos);
 router.get('/:id', [
-    validar_jwt_1.validarJWT,
     (0, express_validator_1.check)('id').custom(db_validators_1.existePedido),
     validar_campos_1.validarCampos
 ], pedido_1.getPedido);

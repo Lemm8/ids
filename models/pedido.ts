@@ -52,9 +52,17 @@ Pedidos.init({
     },
 
     progreso: {
-        type: DataTypes.ENUM( 'En espera', 'En proceso', 'Listo' ),
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'En espera'
+        defaultValue: 'En espera',
+        validate: {
+            customValidator: ( value: string ) => {
+                const enums = [ 'En espera', 'En proceso', 'Listo' ];
+                if (!enums.includes(value)) {
+                    throw new Error('El valor no es valido');
+                }
+            }
+        }
     },
 
     fecha_solicitud: {

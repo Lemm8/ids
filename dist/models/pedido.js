@@ -29,9 +29,17 @@ Pedidos.init({
         defaultValue: 'Dirección Test'
     },
     progreso: {
-        type: sequelize_1.DataTypes.ENUM('En espera', 'En proceso', 'Listo'),
+        type: sequelize_1.DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'En espera'
+        defaultValue: 'En espera',
+        validate: {
+            customValidator: (value) => {
+                const enums = ['En espera', 'En proceso', 'Listo'];
+                if (!enums.includes(value)) {
+                    throw new Error('El valor no es valido');
+                }
+            }
+        }
     },
     fecha_solicitud: {
         type: sequelize_1.DataTypes.DATE,

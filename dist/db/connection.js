@@ -7,10 +7,10 @@ if (process.env.JAWSDB_URL) {
     db = new sequelize_1.Sequelize(process.env.JAWSDB_URL);
 }
 else {
-    db = new sequelize_1.Sequelize(process.env.DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
-        host: process.env.DB_HOST,
-        dialect: 'mysql',
-        port: parseInt(process.env.DB_PORT),
+    db = new sequelize_1.Sequelize(process.env.DATABASE, process.env.DBUSER, process.env.DBPASSWORD, {
+        host: process.env.DBHOST,
+        dialect: 'postgres',
+        port: parseInt(process.env.DBPORT),
         logging: false
     });
 }

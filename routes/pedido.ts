@@ -11,11 +11,9 @@ import { validarJWT, isAdmin, isCliente, isUsuario, isClienteOrAdmin } from '../
 const router = Router();
 
 router.get( '/', [
-    validarJWT,
 ], getPedidos );
 
 router.get( '/:id', [
-    validarJWT,
     check( 'id' ).custom( existePedido ),
     validarCampos
 ], getPedido );

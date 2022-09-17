@@ -15,7 +15,7 @@ require('dotenv').config({ path: process.cwd()+'/.env' });
 
 const htmlCreado = ( pedido: Pedido, servicio: String ) => {        
     let html = `<h1>Haz realizado un pedido</h1><hr>
-                    <h5>Tu pedido con el titulo: ${pedido.titulo} se actualizó</h5>
+                    <h5>Se creo tu pedido con el titulo: ${pedido.titulo}</h5>
                     <h5>Ahora el pedido está en espera, dentro de los siguientes días estarás recibiendo actualizaciones sobre tu pedido, checa tu correo!</h5>
                     <h5>Id de tu pedido: ${pedido.id}</h5>
                     <h5>Servicio: ${servicio}</h5><hr>`;
@@ -187,7 +187,7 @@ export const postPedido = async ( req: Request, res: Response ) => {
 
             const info = await transporter.sendMail({
                 from: process.env.CONTACT_MAIL,
-                to: cliente?.Usuario.correo,
+                to: clienteResult!.Usuario.correo,
                 subject: "Actualización de pedido",
                 html: htmlCreado( pedido, servicioResult!.nombre )
             })

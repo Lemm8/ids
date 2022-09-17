@@ -6,14 +6,12 @@ let db: Sequelize;
 if ( process.env.JAWSDB_URL ) {
     db = new Sequelize( process.env.JAWSDB_URL );
 } else {
-    db = new Sequelize( process.env.MYSQLDATABASE!, process.env.MYSQLUSER!, process.env.MYSQLPASSWORD!, {
-        host: process.env.MYSQLHOST!,
-        dialect: 'mysql',
-        port: parseInt(process.env.MYSQLPORT!),
+    db = new Sequelize( process.env.DATABASE!, process.env.DBUSER!, process.env.DBPASSWORD!, {
+        host: process.env.DBHOST!,
+        dialect: 'postgres',
+        port: parseInt(process.env.DBPORT!),
         logging: false
     });
 }
-
-
 
 export default db;
