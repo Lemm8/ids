@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePedido = exports.putPedido = exports.postPedido = exports.getPedido = exports.getPedidos = void 0;
+exports.deletePedido = exports.putPedido = exports.postPedido = exports.getPedido = exports.getPedidos = exports.getPedidosCliente = exports.getPedidosTecnico = void 0;
 const connection_1 = __importDefault(require("../db/connection"));
 const sequelize_1 = require("sequelize");
 const pedido_1 = __importDefault(require("../models/pedido"));
@@ -60,6 +60,76 @@ let transporter = nodemailer_1.default.createTransport({
         pass: process.env.MAIL_PASSWORD
     }
 });
+const getPedidosTecnico = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // ID CLIENTE
+        const { id } = req.params;
+        // LIMITE DEFAULT
+        let limit = 30;
+        // OBTENER LIMITE DEL QUERY
+        if (req.query.limit) {
+            limit = parseInt(req.query.limit);
+        }
+        const whereTecnico = { id };
+        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit, whereTecnico] }).findAndCountAll();
+        // MANDAR MSG SI NO HAY REGISTROS
+        if (pedidos.count == 0) {
+            return res.status(404).json({
+                status: 404,
+                msg: 'No se han encontrado registros de pedidos'
+            });
+        }
+        // RESULTADOS
+        return res.status(200).json({
+            status: 200,
+            pedidos
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: 500,
+            msg: 'Error en el servidor',
+            error
+        });
+    }
+});
+exports.getPedidosTecnico = getPedidosTecnico;
+const getPedidosCliente = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // ID CLIENTE
+        const { id } = req.params;
+        // LIMITE DEFAULT
+        let limit = 30;
+        // OBTENER LIMITE DEL QUERY
+        if (req.query.limit) {
+            limit = parseInt(req.query.limit);
+        }
+        const where = { ClienteId: id };
+        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit, where] }).findAndCountAll();
+        // MANDAR MSG SI NO HAY REGISTROS
+        if (pedidos.count == 0) {
+            return res.status(404).json({
+                status: 404,
+                msg: 'No se han encontrado registros de pedidos'
+            });
+        }
+        // RESULTADOS
+        return res.status(200).json({
+            status: 200,
+            pedidos
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: 500,
+            msg: 'Error en el servidor',
+            error
+        });
+    }
+});
+exports.getPedidosCliente = getPedidosCliente;
 const getPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // LIMITE DEFAULT
@@ -71,7 +141,7 @@ const getPedidos = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         let where = Object.assign(Object.assign(Object.assign(Object.assign({ estado: true }, (req.query.cliente && { ClienteId: req.query.cliente })), (req.query.servicio && { ServicioId: req.query.servicio })), (req.query.titulo && { titulo: { [sequelize_1.Op.like]: `%${req.query.titulo}%` } })), (req.query.progreso && { progreso: { [sequelize_1.Op.like]: `%${req.query.progreso}%` } }));
         let whereTecnico = Object.assign({}, (req.query.tecnico && { id: req.query.tecnico }));
         // OBTENER TODAS LOS PEDIDOS
-        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit, where, whereTecnico] }).findAndCountAll();
+        const pedidos = yield pedido_1.default.scope({ method: ['getInfo', limit] }).findAndCountAll();
         // MANDAR MSG SI NO HAY REGISTROS
         if (pedidos.count == 0) {
             return res.status(404).json({

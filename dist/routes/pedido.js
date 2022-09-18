@@ -12,6 +12,14 @@ router.get('/:id', [
     (0, express_validator_1.check)('id').custom(db_validators_1.existePedido),
     validar_campos_1.validarCampos
 ], pedido_1.getPedido);
+router.get('/cliente/:id', [
+    validar_jwt_1.validarJWT,
+    (0, express_validator_1.check)('id').custom(db_validators_1.existeCliente),
+], pedido_1.getPedidosCliente);
+router.get('/tecnico/:id', [
+    validar_jwt_1.validarJWT,
+    (0, express_validator_1.check)('id').custom(db_validators_1.existeTecnico),
+], pedido_1.getPedidosTecnico);
 router.post('/', [
     validar_jwt_1.validarJWT,
     validar_jwt_1.isCliente,

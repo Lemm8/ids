@@ -19,8 +19,6 @@ class Pedidos extends Model {
     declare fecha_hecho: Date;
     declare fecha_entregado: Date;
     declare estado: boolean;
-    declare cliente: Cliente;
-    declare servicio: Servicio;
     declare createdAt: string;
     declare updatedAt: string;
     declare Tecnicos: Array<Tecnico>;

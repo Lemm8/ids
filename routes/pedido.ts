@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPedidos, getPedido, postPedido, putPedido, deletePedido } from "../controllers/pedido";
+import { getPedidos, getPedidosCliente, getPedidosTecnico, getPedido, postPedido, putPedido, deletePedido } from "../controllers/pedido";
 
 import { check } from "express-validator";
 
@@ -17,6 +17,16 @@ router.get( '/:id', [
     check( 'id' ).custom( existePedido ),
     validarCampos
 ], getPedido );
+
+router.get( '/cliente/:id', [
+    validarJWT,
+    check( 'id' ).custom( existeCliente ),
+], getPedidosCliente);
+
+router.get( '/tecnico/:id', [
+    validarJWT,
+    check( 'id' ).custom( existeTecnico ),
+], getPedidosTecnico);
 
 router.post( '/', [
     validarJWT,

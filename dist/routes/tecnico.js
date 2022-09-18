@@ -13,8 +13,8 @@ router.get('/:id', [
     validar_campos_1.validarCampos
 ], tecnico_1.getTecnico);
 router.post('/', [
-    // validarJWT,
-    // isAdmin,
+    validar_jwt_1.validarJWT,
+    validar_jwt_1.isAdmin,
     (0, express_validator_1.check)('correo').isEmail(),
     (0, express_validator_1.check)('correo').custom(db_validators_1.existeCorreo),
     (0, express_validator_1.check)('nombre', 'El nombre es obligatorio').exists(),

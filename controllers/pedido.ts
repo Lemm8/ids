@@ -63,6 +63,86 @@ let transporter = nodemailer.createTransport({
     }
 });
 
+export const getPedidosTecnico = async ( req: Request, res: Response ) => {
+    try {
+        // ID CLIENTE
+        const { id } = req.params;
+        // LIMITE DEFAULT
+        let limit = 30;
+
+        // OBTENER LIMITE DEL QUERY
+        if ( req.query.limit ) {
+            limit = parseInt( req.query.limit as any );
+        }
+
+        const whereTecnico = { id }
+
+        const pedidos = await Pedido.scope({ method: [ 'getInfo', limit, whereTecnico ] }).findAndCountAll();
+
+        // MANDAR MSG SI NO HAY REGISTROS
+        if ( pedidos.count == 0 ) {
+            return res.status( 404 ).json({
+                status: 404,
+                msg: 'No se han encontrado registros de pedidos'
+            })
+        }
+
+        // RESULTADOS
+        return res.status( 200 ).json({
+            status: 200,
+            pedidos
+        })
+
+    } catch (error) {
+        console.log( error ) ;
+        return res.status( 500 ).json({
+            status: 500,
+            msg: 'Error en el servidor',
+            error
+        });
+    }
+}
+
+export const getPedidosCliente = async ( req: Request, res: Response ) => {
+    try {
+        // ID CLIENTE
+        const { id } = req.params;
+        // LIMITE DEFAULT
+        let limit = 30;
+
+        // OBTENER LIMITE DEL QUERY
+        if ( req.query.limit ) {
+            limit = parseInt( req.query.limit as any );
+        }
+
+        const where = { ClienteId: id }
+
+        const pedidos = await Pedido.scope({ method: [ 'getInfo', limit, where ] }).findAndCountAll();
+
+        // MANDAR MSG SI NO HAY REGISTROS
+        if ( pedidos.count == 0 ) {
+            return res.status( 404 ).json({
+                status: 404,
+                msg: 'No se han encontrado registros de pedidos'
+            })
+        }
+
+        // RESULTADOS
+        return res.status( 200 ).json({
+            status: 200,
+            pedidos
+        })
+
+    } catch (error) {
+        console.log( error ) ;
+        return res.status( 500 ).json({
+            status: 500,
+            msg: 'Error en el servidor',
+            error
+        });
+    }
+}
+
 export const getPedidos = async( req: Request, res: Response ) => {
 
     try {
@@ -78,7 +158,6 @@ export const getPedidos = async( req: Request, res: Response ) => {
         let where = {
             estado: true,
             ...( req.query.cliente && { ClienteId: req.query.cliente } ),
-            // ...( req.query.tecnico && { Tecnicos: [req.query.tecnico] } ),
             ...( req.query.servicio && { ServicioId: req.query.servicio } ),
             ...( req.query.titulo && { titulo: { [ Op.like ]: `%${ req.query.titulo }%` } } ),
             ...( req.query.progreso && { progreso: { [ Op.like ]: `%${ req.query.progreso }%` } } ),
@@ -89,7 +168,7 @@ export const getPedidos = async( req: Request, res: Response ) => {
         }
 
         // OBTENER TODAS LOS PEDIDOS
-        const pedidos = await Pedido.scope({ method: [ 'getInfo', limit, where, whereTecnico ] }).findAndCountAll();
+        const pedidos = await Pedido.scope({ method: [ 'getInfo', limit ] }).findAndCountAll();
 
         // MANDAR MSG SI NO HAY REGISTROS
         if ( pedidos.count == 0 ) {
