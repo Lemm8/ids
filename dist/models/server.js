@@ -65,6 +65,13 @@ class Server {
         this.app.use(credentials_1.default);
         // CORS
         this.app.use((0, cors_1.default)(corsOptions_1.default));
+        this.app.use(function (req, res, next) {
+            req.header("Access-Control-Allow-Origin"); // update to match the domain you will make the request from
+            req.header("Access-Control-Allow-Headers");
+            res.setHeader("Access-Control-Allow-Origin", "https://idslapaz.com"); // update to match the domain you will make the request from
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
         // LECTURA DEL BODY
         this.app.use(express_1.default.json());
         // COOKIE PARSER
