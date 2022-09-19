@@ -66,6 +66,12 @@ class Server {
         // CORS
         this.app.use( cors( corsOptions ) );
 
+        this.app.use(function(req, res, next) {
+            res.header("Access-Control-Allow-Origin", "https://idslapaz.com/"); // update to match the domain you will make the request from
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
+
         // LECTURA DEL BODY
         this.app.use( express.json() );
         
