@@ -60,9 +60,6 @@ class Server {
 
 
     middlewares() {
-        // CREDENCIALES DEL SERVIDOR
-        this.app.use( credentials );   
-
         // CORS
         this.app.use( cors( {
             origin: ( origin, callback ) => {
@@ -76,7 +73,16 @@ class Server {
             allowedHeaders: ["Access-Control-Allow-Origin", "Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
             optionsSuccessStatus: 200,
             credentials: true
-        }));                     
+        }));
+        
+        this.app.use( function (req, res, next) {
+            const origin = req.headers.origin;
+            if ( origin && allowedOrigins.includes( origin ) ) {
+                res.header( 'Access-Control-Allow-Credentials', 'true' );
+                res.header( 'Access-Control-Allow-Origin', origin );
+            }
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        });
 
         // LECTURA DEL BODY
         this.app.use( express.json() );
