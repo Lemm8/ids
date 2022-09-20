@@ -69,7 +69,7 @@ class Server {
         this.app.use(function(req, res, next) {
             req.header("Access-Control-Allow-Origin"); // update to match the domain you will make the request from
             req.header("Access-Control-Allow-Headers");
-            res.setHeader("Access-Control-Allow-Origin", ["https://idslapaz.com", "https://idslapaz.com"]); // update to match the domain you will make the request from
+            res.setHeader("Access-Control-Allow-Origin", ["https://idslapaz.com", "http://localhost:3000/"]); // update to match the domain you will make the request from
             res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             next();
         });
