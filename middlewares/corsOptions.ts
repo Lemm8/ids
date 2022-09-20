@@ -1,5 +1,4 @@
 import allowedOrigins from "../config/allowedOrigins";
-import { Request, Response, NextFunction } from "express";
 
 const corsOptions = {
     origin: ( origin: any, callback: any ) => {
