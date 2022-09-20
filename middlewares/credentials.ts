@@ -4,8 +4,8 @@ import { Request, Response, NextFunction } from 'express';
 const credentials = ( req: Request, res: Response, next: NextFunction ) => {
     const origin = req.headers.origin;
     if ( origin && allowedOrigins.includes( origin ) ) {
-        res.setHeader( 'Access-Control-Allow-Credentials', 'true' );
-        res.setHeader( 'Access-Control-Allow-Origin', origin );
+        res.header( 'Access-Control-Allow-Credentials', 'true' );
+        res.header( 'Access-Control-Allow-Origin', origin );
     }
     next();
 }
