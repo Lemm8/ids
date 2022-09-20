@@ -25,8 +25,8 @@ const refresh_1 = __importDefault(require("../routes/refresh"));
 const email_1 = __importDefault(require("../routes/email"));
 const connection_1 = __importDefault(require("../db/connection"));
 require("../db/relations");
-const corsOptions_1 = __importDefault(require("../config/corsOptions"));
 const credentials_1 = __importDefault(require("../middlewares/credentials"));
+const allowedOrigins_1 = __importDefault(require("../config/allowedOrigins"));
 class Server {
     constructor() {
         this.apiPaths = {
@@ -64,11 +64,18 @@ class Server {
         // CREDENCIALES DEL SERVIDOR
         this.app.use(credentials_1.default);
         // CORS
-        this.app.use((0, cors_1.default)(corsOptions_1.default));
+        this.app.use((0, cors_1.default)({
+            origin: allowedOrigins_1.default,
+            optionsSuccessStatus: 200,
+            credentials: true
+        }));
         this.app.use(function (req, res, next) {
             req.header("Access-Control-Allow-Origin"); // update to match the domain you will make the request from
             req.header("Access-Control-Allow-Headers");
-            res.setHeader("Access-Control-Allow-Origin", "https://idslapaz.com"); // update to match the domain you will make the request from
+            let origin = req.headers.origin;
+            if (origin !== undefined && allowedOrigins_1.default.includes(origin)) {
+                res.setHeader("Access-Control-Allow-Origin", origin); // update to match the domain you will make the request from
+            }
             res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             next();
         });

@@ -13,8 +13,8 @@ import emailRoutes from '../routes/email';
 import db from '../db/connection';
 
 import "../db/relations";
-import corsOptions from '../config/corsOptions';
 import credentials from '../middlewares/credentials';
+import allowedOrigins from '../config/allowedOrigins';
 
 class Server {
 
@@ -61,15 +61,22 @@ class Server {
 
     middlewares() {
         // CREDENCIALES DEL SERVIDOR
-        this.app.use( credentials );
+        this.app.use( credentials );        
 
         // CORS
-        this.app.use( cors( corsOptions ) );
+        this.app.use( cors( {
+            origin: allowedOrigins,
+            optionsSuccessStatus: 200,
+            credentials: true
+        }));
 
-        this.app.use(function(req, res, next) {
+        this.app.use(function(req, res, next) {            
             req.header("Access-Control-Allow-Origin"); // update to match the domain you will make the request from
-            req.header("Access-Control-Allow-Headers");
-            res.setHeader("Access-Control-Allow-Origin", ["https://idslapaz.com", "http://localhost:3000"]); // update to match the domain you will make the request from
+            req.header("Access-Control-Allow-Headers");            
+            let origin = req.headers.origin;
+            if ( origin !== undefined && allowedOrigins.includes( origin ) ) {
+                res.setHeader("Access-Control-Allow-Origin", origin); // update to match the domain you will make the request from
+            }
             res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             next();
         });
