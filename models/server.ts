@@ -60,26 +60,23 @@ class Server {
 
 
     middlewares() {
-        // CREDENCIALES DEL SERVIDOR
-        this.app.use( credentials );        
-
         // CORS
         this.app.use( cors( {
-            origin: allowedOrigins,
+            origin: ( origin, callback ) => {
+                if ( allowedOrigins.indexOf( origin! ) !== -1 ) {
+                    callback( null, true );
+                } else {
+                    callback( new Error( `${origin} not allowed` ) )
+                }
+            },
+            methods: [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
+            allowedHeaders: ["Access-Control-Allow-Origin", "Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
             optionsSuccessStatus: 200,
             credentials: true
         }));
 
-        this.app.use(function(req, res, next) {            
-            req.header("Access-Control-Allow-Origin"); // update to match the domain you will make the request from
-            req.header("Access-Control-Allow-Headers");            
-            let origin = req.headers.origin;
-            if ( origin !== undefined && allowedOrigins.includes( origin ) ) {
-                res.setHeader("Access-Control-Allow-Origin", origin); // update to match the domain you will make the request from
-            }
-            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            next();
-        });
+        // CREDENCIALES DEL SERVIDOR
+        this.app.use( credentials );                
 
         // LECTURA DEL BODY
         this.app.use( express.json() );

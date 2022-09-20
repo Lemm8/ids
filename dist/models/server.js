@@ -61,24 +61,23 @@ class Server {
         });
     }
     middlewares() {
-        // CREDENCIALES DEL SERVIDOR
-        this.app.use(credentials_1.default);
         // CORS
         this.app.use((0, cors_1.default)({
-            origin: allowedOrigins_1.default,
+            origin: (origin, callback) => {
+                if (allowedOrigins_1.default.indexOf(origin) !== -1) {
+                    callback(null, true);
+                }
+                else {
+                    callback(new Error(`${origin} not allowed`));
+                }
+            },
+            methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+            allowedHeaders: ["Access-Control-Allow-Origin", "Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
             optionsSuccessStatus: 200,
             credentials: true
         }));
-        this.app.use(function (req, res, next) {
-            req.header("Access-Control-Allow-Origin"); // update to match the domain you will make the request from
-            req.header("Access-Control-Allow-Headers");
-            let origin = req.headers.origin;
-            if (origin !== undefined && allowedOrigins_1.default.includes(origin)) {
-                res.setHeader("Access-Control-Allow-Origin", origin); // update to match the domain you will make the request from
-            }
-            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            next();
-        });
+        // CREDENCIALES DEL SERVIDOR
+        this.app.use(credentials_1.default);
         // LECTURA DEL BODY
         this.app.use(express_1.default.json());
         // COOKIE PARSER
