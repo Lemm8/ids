@@ -26,7 +26,7 @@ const email_1 = __importDefault(require("../routes/email"));
 const connection_1 = __importDefault(require("../db/connection"));
 require("../db/relations");
 const credentials_1 = __importDefault(require("../middlewares/credentials"));
-const allowedOrigins_1 = __importDefault(require("../config/allowedOrigins"));
+const corsOptions_1 = __importDefault(require("../middlewares/corsOptions"));
 class Server {
     constructor() {
         this.apiPaths = {
@@ -61,23 +61,11 @@ class Server {
         });
     }
     middlewares() {
-        // CORS
-        this.app.use((0, cors_1.default)({
-            origin: (origin, callback) => {
-                if (allowedOrigins_1.default.indexOf(origin) !== -1) {
-                    callback(null, true);
-                }
-                else {
-                    callback(new Error(`${origin} not allowed`));
-                }
-            },
-            methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-            allowedHeaders: ["Access-Control-Allow-Origin", "Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-            optionsSuccessStatus: 200,
-            credentials: true
-        }));
-        // CREDENCIALES DEL SERVIDOR
+        // HANLDE OPTIONS CREDENTIALS BEFORE CORS
         this.app.use(credentials_1.default);
+        // CORS
+        // this.app.options( '*', cors( corsOptions ) );
+        this.app.use((0, cors_1.default)(corsOptions_1.default));
         // LECTURA DEL BODY
         this.app.use(express_1.default.json());
         // COOKIE PARSER

@@ -65,7 +65,8 @@ class Server {
         this.app.use( credentials );
 
         // CORS
-        this.app.use( cors( corsOptions ));
+        // this.app.options( '*', cors( corsOptions ) );
+        this.app.use( cors( corsOptions )); 
 
         // LECTURA DEL BODY
         this.app.use( express.json() );

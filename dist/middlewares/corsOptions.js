@@ -1,7 +1,5 @@
-import allowedOrigins from "../config/allowedOrigins";
-
-
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const corsOptions = {
     // origin: ( origin: any, callback: any ) => {
     //     if ( allowedOrigins.indexOf( origin! ) !== -1 || !origin ) {
@@ -12,6 +10,6 @@ const corsOptions = {
     // },
     origin: ["http://idslapaz.com", "https://idslapaz.com", "http://localhost:3000"],
     optionsSuccessStatus: 200,
-}
-
-export default corsOptions;
+};
+exports.default = corsOptions;
+//# sourceMappingURL=corsOptions.js.map
